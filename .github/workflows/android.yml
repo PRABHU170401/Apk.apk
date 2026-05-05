@@ -16,20 +16,23 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          # Using 3.11 for better stability with modern Cython/Kivy
+          python-version: '3.11'
 
       - name: Install Buildozer and Dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev openjdk-17-jdk
-          pip install --user --upgrade buildozer cython virtualenv
+          # Install specific versions of tools to avoid 'long' error
+          pip install --user --upgrade "buildozer>=1.5.0" "Cython<3.0" virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
           cd myapp
-          # The 'yes |' prefix automatically accepts the Google licenses
-          # that were causing your 'Aidl not found' error.
+          # Clean previous failed attempts
+          buildozer android clean
+          # Auto-accept licenses and build
           yes | buildozer android debug
         
       - name: Upload APK
