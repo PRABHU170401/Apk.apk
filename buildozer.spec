@@ -1,5 +1,5 @@
 [app]
-title = SMPL CC
+title = MyApp
 package.name = myapp
 package.domain = org.test
 
