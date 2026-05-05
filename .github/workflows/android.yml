@@ -1,4 +1,4 @@
-name:smpl cc
+name: Build Kivy APK
 
 on:
   push:
