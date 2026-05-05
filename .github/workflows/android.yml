@@ -1,9 +1,7 @@
-name: Build Android APK
+name: Build Kivy APK
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -14,24 +12,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          # This helps speed up future builds
-          cache: 'gradle'
-
-      - name: Grant Execute Permission for Gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        # Use assembleDebug for a testing APK
-        run: ./gradlew assembleDebug
+          # This action handles all the Java/SDK setup for you
+          buildozer_version: stable
+          command: buildozer android debug
 
       - name: Upload APK
-        # This v4 version fixes the "deprecated" error from your first screenshot
+        # Using v4 to fix your original error
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: kivy-app-debug-apk
+          path: ${{ steps.buildozer.outputs.filename }}
