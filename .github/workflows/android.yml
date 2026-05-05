@@ -14,16 +14,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build with Buildozer
-        # This specialized action handles the complex Android environment setup automatically
+        # Using this action avoids the 'chown: invalid user' and missing library errors
         uses: ArtemSBulgakov/buildozer-action@v1
         with:
           buildozer_version: stable
           command: buildozer android debug
           repository_root: .
-          workdir: myapp  # Points to your subfolder containing main.py
+          workdir: myapp  # Ensures Buildozer finds your files in the myapp folder
 
       - name: Upload APK
-        # Upgraded to v4 to resolve the deprecation error seen in your first log
         uses: actions/upload-artifact@v4
         with:
           name: kivy-apk
