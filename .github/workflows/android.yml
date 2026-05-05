@@ -6,23 +6,22 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Using a specific version for stability
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+        # Using this version avoids the 'invalid user' permission bug
+        uses: FaridSafi/buildozer-action@master
         with:
-          # This action handles all the Java/SDK setup for you
-          buildozer_version: stable
           command: buildozer android debug
+          buildozer_version: stable
 
       - name: Upload APK
-        # Using v4 to fix your original error
         uses: actions/upload-artifact@v4
         with:
-          name: kivy-app-debug-apk
-          path: ${{ steps.buildozer.outputs.filename }}
+          name: kivy-app-debug
+          # Buildozer typically puts the APK in the bin/ folder
+          path: bin/*.apk
