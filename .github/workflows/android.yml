@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    # 22.04 has the best compatibility for Buildozer/NDK
     runs-on: ubuntu-22.04
 
     steps:
@@ -22,18 +21,20 @@ jobs:
       - name: Install Buildozer and Dependencies
         run: |
           sudo apt update
-          # Swapped libtinfo5 for libtinfo6 and standardized the list
           sudo apt install -y git zip unzip autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev
           pip install --user --upgrade buildozer cython virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          # This will take 15-20 minutes the first time
+          # Move into your subfolder where buildozer.spec lives
+          cd myapp
+          # The --debug flag gives more info if it crashes
           buildozer android debug
         
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: kivy-apk
-          path: bin/*.apk
+          # Buildozer creates the bin/ folder inside the directory it runs in
+          path: myapp/bin/*.apk
