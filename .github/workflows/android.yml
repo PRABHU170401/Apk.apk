@@ -16,23 +16,22 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          # Using 3.11 for better stability with modern Cython/Kivy
           python-version: '3.11'
 
       - name: Install Buildozer and Dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip autoconf automake libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo6 cmake libffi-dev libssl-dev openjdk-17-jdk
-          # Install specific versions of tools to avoid 'long' error
-          pip install --user --upgrade "buildozer>=1.5.0" "Cython<3.0" virtualenv
+          # Forcing Cython 0.29.36 prevents the 'undeclared name not builtin: long' error
+          pip install --user --upgrade "buildozer>=1.5.0" "Cython==0.29.36" virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
           cd myapp
-          # Clean previous failed attempts
-          buildozer android clean
-          # Auto-accept licenses and build
+          # '|| true' ensures the build continues even if there is nothing to clean yet
+          buildozer android clean || true
+          # 'yes |' automatically accepts the required Google SDK licenses
           yes | buildozer android debug
         
       - name: Upload APK
